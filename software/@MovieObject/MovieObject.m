@@ -138,9 +138,12 @@ classdef  MovieObject < hgsetget
                 movieClass = class(obj);
                 objName = regexprep(movieClass,'([A-Z])',' ${lower($1)}');
                 defaultName = regexprep(movieClass,'(^[A-Z])','${lower($1)}');
-                [filename,path] = uiputfile('*.mat',['Find a place to save your' objName],...
-                    [defaultDir filesep defaultName '.mat']);
+                % [filename,path] = uiputfile('*.mat',['Find a place to save your' objName],...
+                %     [defaultDir filesep defaultName '.mat']);
                 
+                % automatically save the movieData.mat under the same tracking folder
+                filename = [ defaultName '.mat']; path = defaultDir; % added by YHW @3/27/2024
+
                 if ~any([filename,path]),
                     fullPath=[];
                 else
@@ -202,9 +205,9 @@ classdef  MovieObject < hgsetget
                     % the file does not exist
                     % do nothing
                     elseif(~strcmp(err.identifier,'MATLAB:MOVEFILE:FileDoesNotExist'))
-                        warning('MovieObject:saveBackup:Failure', ...
-                            'Failed to save backup\n%s to\n%s', ...
-                            fullPath,backupPath);
+                        % warning('MovieObject:saveBackup:Failure', ...
+                        %     'Failed to save backup\n%s to\n%s', ...
+                        %     fullPath,backupPath); % commented off by YHW @10/8/2024
                     end
                 end
             end

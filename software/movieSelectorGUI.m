@@ -110,6 +110,10 @@ userData.iconHelpFig =-1;
 userData.omeroLoginFig = -1;
 userData.omeroDataFig = -1;
 
+    % added by YHW @2/24/2025
+    trackList = dir( [ pwd '\*tracking*']);
+    userData.trackList = trackList;
+    
 % Load help icon from dialogicons.mat
 userData = loadLCCBIcons(userData);
 

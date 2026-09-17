@@ -326,7 +326,57 @@ else
     userDir=pwd;
 end
 
-path = uigetdir(userDir, 'Add Channels ...');
+   % added by YHW @5/16/2025
+   % to directly open the corresponding folder on my F disc (tiff data)
+   % and keeps track of which folders have been opened
+   % ------------------------------------------------------------
+   trackList = { userData_main.trackList.name}'; % list of tracking folders
+   if isempty( trackList) % updated at 5/14/2025 for loci Pos experiments
+       fprintf( '   ~~~~~ No tracking folders detected ~~~~~    $$movieDataGUI$$\n')
+       path = uigetdir( userDir, 'Add Channels ...'); % folder to store analysis result
+       fprintf( '\n    ~~~~~~  output saved under the same folder: %s  ~~~~~~\n', path)
+   else
+       if ~isfield( userData_main, 'userFolder') % the first folder to add, no record 'userFolder'
+           num = 1;
+           tmp = split( userDir, '\');
+           ind = find( contains( tmp, 'Lab Data'));
+                      
+               % Drives to search (in order) added by YHW by  11/27/2025
+               driveList = {'F:\', 'E:\', 'D:\'};
+              
+               % Build the relative subpath
+               subPath = fullfile( tmp{ ind+1:end}); % same subfolder path in hard drive
+               % subPath = fullfile( tmp{ end});
+              
+               found = false;  userDir = '';
+              
+               for d = 1: length( driveList)
+                   userDir = fullfile( driveList{d}, subPath);           
+                   if isfolder(userDir)
+                       fprintf('       Folder detected: %s       [movieDataGUI.m]\n', userDir);
+                       found = true;   break;
+                   end
+               end           
+               if ~found
+                   fprintf('Folder NOT found. Manually Select Folder\n');
+                   userDir = uigetdir( pwd, 'Select the folder containing raw tracking files'); % added by YHW @4/30/2026
+               end
+       else
+           % automatically load the subsequent folder
+           % num = 1 + str2double( regexp( userData_main.userFolder, '\d+', 'match'));
+           num = 1 + find( strcmp(  userData_main.userFolder, trackList)); % updated by YHW @6/27/2025
+           if num > length( trackList)
+               fprintf( '   ~~~~~ There is no more folders to add ~~~~~')
+               return
+           end
+       end
+  
+       path = fullfile( userDir, trackList{ num});
+       fprintf( '\n    ~~~~~~  %s loaded  ~~~~~~\n', trackList{ num})
+   end
+   % ------------------------------------------------------------
+
+% path = uigetdir(userDir, 'Add Channels ...');
 if path == 0, return; end
 
 % Get current list
@@ -372,12 +422,22 @@ end
 set(handles.listbox_channel,'string',contents);
 
 if ishandle(userData.mainFig), 
-    userData_main.userDir = fileparts(path);
+    % userData_main.userDir = fileparts(path);
+
+        % modified by YHW @2/24/2025 --------------------------------------
+        % save the path & folder of the tracking folder
+        [ userData_main.userDir, userData_main.userFolder]= fileparts(path);
+
     set(handles_main.figure1, 'UserData', userData_main)
 end
 
 set(handles.figure1, 'Userdata', userData)
 guidata(hObject, handles);
+
+    % added by YHW @3/27/2024 ---------------------------------------------
+    % to automatically run output & done function after adding one folder
+    pushbutton_output_Callback(hObject, eventdata, handles) % auto run output function
+    pushbutton_done_Callback(hObject, eventdata, handles) % auto click the save button
 
 
 % --- Executes during object deletion, before destroying properties.
@@ -393,9 +453,23 @@ end
 % --- Executes on button press in pushbutton_output.
 function pushbutton_output_Callback(hObject, eventdata, handles)
 
-pathname = uigetdir(pwd,'Select a directory to store the processes output');
-if isnumeric(pathname), return; end
+% pathname = uigetdir(pwd,'Select a directory to store the processes output');
+% if isnumeric(pathname), return; end
 
+    % find corresponding tracking folder, added by YHW @3/27/2024
+    % automatically select the corresponding folder in the pwd path
+    folderPath = handles.listbox_channel.String{1}; % tracking data folder path
+    [~, folderName] = fileparts( folderPath);
+
+    % determine output folder, added by YHW @5/14/2025
+    trackList = handles.figure1.UserData.mainFig.UserData.trackList;
+    % trackList = {handles.figure1.UserData.mainFig.UserData.trackList.name}';
+    if isempty( trackList)
+        pathname = folderPath; % the same folder as the data
+    else
+        pathname = [pwd '\' folderName]; % local empty tracking folders
+    end
+    
 set(handles.edit_output, 'String', pathname);
 
 % --- Executes on button press in pushbutton_setting_chan.

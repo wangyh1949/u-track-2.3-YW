@@ -57,7 +57,11 @@ classdef  TiffSeriesReader < Reader
             bitDepth = zeros(obj.getSizeC(), 1);
             for iChan = 1 : obj.getSizeC()
                 fileNames = obj.getImageFileNames(iChan);
-                imInfo = cellfun(@(x) imfinfo([obj.paths{iChan} filesep x]), fileNames, 'unif', 0);
+
+                % only convert image info from the 1st frame, speed up, modified by YHW @6/15/2023
+                % imInfo = cellfun(@(x) imfinfo([obj.paths{iChan} filesep x]), fileNames, 'unif', 0);
+                imInfo = cellfun(@(x) imfinfo([obj.paths{iChan} filesep x]), fileNames(1), 'unif', 0); 
+
                 sizeX(iChan) = unique(cellfun(@(x)(x.Width), imInfo));
                 sizeY(iChan) = unique(cellfun(@(x)(x.Height), imInfo));
                 
