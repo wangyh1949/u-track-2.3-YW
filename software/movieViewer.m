@@ -539,7 +539,11 @@ end
         end
         
     end
-set(mainFig,'Position',[sz(3)/50 sz(4)/3.8 maxWidth maxHeight]);
+
+% position of the 'Viewer' window 
+% set(mainFig,'Position',[sz(3)/50 sz(4)/3.8 maxWidth maxHeight]);
+set(mainFig,'Position',[sz(3)/30 sz(4)/2 maxWidth maxHeight]); % modified by YHW
+
 set(moviePanel,'Position',[10 panelsHeight+10 panelsLength moviePanelHeight]);
 % Update handles structure and attach it to the main figure
 handles = guihandles(mainFig);
@@ -849,8 +853,14 @@ if strcmp(figName,'Movie')
     sz=get(0,'ScreenSize');
     nx=userData.MO.imSize_(2);
     ny=userData.MO.imSize_(1);
-    sc = max(1, max(nx/(.9*sz(3)), ny/(.9*sz(4))));
-    h = figure('Position',[sz(3)*.2 sz(4)*.2 nx/sc ny/sc],...
+    % sc = max(1, max(nx/(.9*sz(3)), ny/(.9*sz(4))));
+    % h = figure('Position',[sz(3)*.2 sz(4)*.2 nx/sc ny/sc],...
+    %     'Name',figName,'NumberTitle','off','Tag','viewerFig',...
+    %     'UserData',handles.figure1);
+    
+    % size & position of the 'Movie' window (tiff image)
+    sc = max(0.3, max(nx/(.8*sz(3)), ny/(.8*sz(4)))); % modified by YHW @7/25/2023
+    h = figure('Position',[sz(3)*.35 sz(4)*.1 nx/sc ny/sc],...
         'Name',figName,'NumberTitle','off','Tag','viewerFig',...
         'UserData',handles.figure1);
     
