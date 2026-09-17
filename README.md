@@ -1,4 +1,16 @@
-# u-track 2.0
+# u-track 2.3 modified by YW
+
+### Modifications by Yu-Huan
+This is a modified version of u-track, which helps me better run the program. Check the commits for details. 
+
+* I automated the movie addition step. The scripts now auto-select input & output folder, and iterate through 'tracking00x' folders. 
+  * you need to follow certain folder structures.
+  * you need to update the script `movieDataGUI.m` based on your folder names. (see instruction in my u-track protocol).
+* I changed the size & position of the result viewing windows, making it easier to check results.
+
+
+
+## 
 
 ![Alt Text](img/utrack.gif?raw=true)
 
